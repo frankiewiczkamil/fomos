@@ -1,18 +1,15 @@
 defmodule Fomos do
+  # use HTTPoison
   @moduledoc """
   Documentation for `Fomos`.
   """
 
   @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Fomos.hello()
-      :world
-
   """
   def hello do
-    :world
+    # val = Application.fetch_env!(:fomos, :hello)
+    token = Application.fetch_env!(:fomos, :token)
+    greet = Application.fetch_env!(:fomos, :greet)
+    {token, greet}
   end
 end
