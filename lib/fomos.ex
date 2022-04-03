@@ -1,15 +1,17 @@
 defmodule Fomos do
-  # use HTTPoison
   @moduledoc """
-  Documentation for `Fomos`.
+  Fomos keeps the contexts that define your domain
+  and business logic.
+
+  Contexts are also responsible for managing your data, regardless
+  if it comes from the database, an external API or others.
   """
+  import Spotify_API
 
   @doc """
   """
   def hello do
-    # val = Application.fetch_env!(:fomos, :hello)
-    token = Application.fetch_env!(:fomos, :token)
-    greet = Application.fetch_env!(:fomos, :greet)
-    {token, greet}
+    get_my_shows()
+    |> Enum.map(fn %{id: id} -> get_episodes_by_show_id(id) end)
   end
 end
