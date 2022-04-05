@@ -37,13 +37,21 @@ defmodule FomosWeb.SubscriptionController do
 
     request_body = URI.encode_query(payload)
 
-    {_, %{:body => body}} =
+    # todo handle not error scenario
+    result =
       HTTPoison.post(
         @token_url,
         request_body,
         headers
       )
+      |> pick_body
+      |> Jason.decode!()
 
-    text(conn, body)
+    authorization = "#{result["token_type"]} #{result["access_token"]}"
+    shows = Spotify_API.get_shows(authorization)
+
+    json(conn, shows)
   end
+
+  defp pick_body({_, %{:body => body}}), do: body
 end

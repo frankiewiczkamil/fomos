@@ -11,7 +11,7 @@ defmodule Fomos do
   @doc """
   """
   def hello do
-    get_my_shows()
-    |> Enum.map(fn %{id: id} -> get_episodes_by_show_id(id) end)
+    # get_my_shows()
+    # |> Enum.map(fn %{id: id} -> get_episodes_by_show_id(id) end)
   end
 end
