@@ -48,7 +48,7 @@ defmodule FomosWeb.SubscriptionController do
       |> Jason.decode!()
 
     authorization = "#{result["token_type"]} #{result["access_token"]}"
-    result = Subscription.subscribe(authorization)
+    result = Subscription.Service.subscribe(authorization)
 
     json(conn, result)
   end

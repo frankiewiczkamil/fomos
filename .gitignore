@@ -26,3 +26,4 @@ fomos-*.tar
 /tmp/
 
 **/*.secret.exs
+*.db
