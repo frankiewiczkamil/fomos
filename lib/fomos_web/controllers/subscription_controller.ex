@@ -48,9 +48,9 @@ defmodule FomosWeb.SubscriptionController do
       |> Jason.decode!()
 
     authorization = "#{result["token_type"]} #{result["access_token"]}"
-    shows = Spotify_API.get_shows(authorization)
+    result = Subscription.subscribe(authorization)
 
-    json(conn, shows)
+    json(conn, result)
   end
 
   defp pick_body({_, %{:body => body}}), do: body

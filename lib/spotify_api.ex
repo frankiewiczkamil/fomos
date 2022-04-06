@@ -22,6 +22,15 @@ defmodule Spotify_API do
     fetch(url, authorization, [])
   end
 
+  @spec get_user_info(String.t()) :: any
+  def get_user_info(authorization) do
+    url = "#{@api}/me"
+
+    HTTPoison.get!(url, Authorization: authorization)
+    |> pick_body()
+    |> Jason.decode!()
+  end
+
   defp fetch(url, authorization, elements) do
     response =
       HTTPoison.get!(url, Authorization: authorization)
