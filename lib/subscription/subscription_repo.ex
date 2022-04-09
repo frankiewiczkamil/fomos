@@ -15,12 +15,21 @@ defmodule Subscription.Repo do
 
   def first() do
     table = init()
-    :dets.first(table)
+
+    case first_id = :dets.first(table) do
+      :"$end_of_table" -> nil
+      _ -> first_id
+    end
   end
 
+  @spec next(String.t()) :: String.t() | nil
   def next(id) do
     table = init()
-    :dets.lookup(table, id)
+
+    case next_id = :dets.next(table, id) do
+      :"$end_of_table" -> nil
+      _ -> next_id
+    end
   end
 
   defp init() do
