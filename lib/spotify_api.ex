@@ -65,10 +65,8 @@ defmodule Spotify_API do
 
   @spec get_episodes_by_show_id(String.t(), String.t()) :: list
   def get_episodes_by_show_id(authorization, show_id) do
-    HTTPoison.get!("#{@api}/shows/#{show_id}/episodes", Authorization: authorization)
-    |> pick_body()
-    |> Jason.decode!()
-    |> pick_items()
-    |> Enum.map(&episode_main_info/1)
+    url = "#{@api}/shows/#{show_id}/episodes"
+    transform = fn r -> Enum.map(r, &episode_main_info/1) end
+    fetch_all(url, authorization, transform)
   end
 end
