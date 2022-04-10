@@ -19,7 +19,14 @@ defmodule Spotify_API do
   @spec get_shows(String.t()) :: list
   def get_shows(authorization) do
     url = "#{@api}/me/shows"
-    fetch(url, authorization, [])
+
+    transformation = fn arg ->
+      arg
+      |> Enum.map(&pick_show/1)
+      |> Enum.map(&pick_show_main_info/1)
+    end
+
+    fetch_all(url, authorization, transformation)
   end
 
   @spec get_user_info(String.t()) :: any
@@ -31,7 +38,11 @@ defmodule Spotify_API do
     |> Jason.decode!()
   end
 
-  defp fetch(url, authorization, elements) do
+  defp fetch_all(url, authorization, transformation) do
+    fetch_loop(url, authorization, [], transformation)
+  end
+
+  defp fetch_loop(url, authorization, elements, transformation) do
     response =
       HTTPoison.get!(url, Authorization: authorization)
       |> pick_body()
@@ -40,8 +51,7 @@ defmodule Spotify_API do
     new_elements =
       response
       |> pick_items()
-      |> Enum.map(&pick_show/1)
-      |> Enum.map(&pick_show_main_info/1)
+      |> transformation.()
 
     elements = elements ++ new_elements
 
@@ -49,7 +59,7 @@ defmodule Spotify_API do
 
     case next_url do
       nil -> elements
-      _ -> fetch(next_url, authorization, elements)
+      _ -> fetch_loop(next_url, authorization, elements, transformation)
     end
   end
 
