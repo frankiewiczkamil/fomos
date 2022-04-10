@@ -45,7 +45,7 @@ defmodule Show.TrackingCoordinator do
     Logger.debug(" * track_worker #{show_id}")
     # user-read-playback-position grant is required o,o
     auth = Auth.get_dev_token()
-    # r = Spotify_API.get_episodes_by_show_id(auth, show_id)
+    # r = Episode.SpotifyApiClient.get_episodes_by_show_id(auth, show_id)
 
     # r
     # |> Enum.map(fn %{name: name, release_date: release_date} ->

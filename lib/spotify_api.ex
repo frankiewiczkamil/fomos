@@ -7,38 +7,12 @@ defmodule Spotify_API do
           name: String.t()
         }
 
-  defp pick_body(%{body: body}), do: body
-  defp pick_items(%{"items" => items}), do: items
-  defp pick_show(%{"show" => show}), do: show
-  defp pick_show_main_info(%{"id" => id, "name" => name}), do: %{id: id, name: name}
+  def api_url(), do: @api
 
-  defp episode_main_info(%{"release_date" => release_date, "name" => name}) do
-    %{release_date: release_date, name: name}
-  end
+  def pick_body(%{body: body}), do: body
+  def pick_items(%{"items" => items}), do: items
 
-  @spec get_shows(String.t()) :: list
-  def get_shows(authorization) do
-    url = "#{@api}/me/shows"
-
-    transformation = fn arg ->
-      arg
-      |> Enum.map(&pick_show/1)
-      |> Enum.map(&pick_show_main_info/1)
-    end
-
-    fetch_all(url, authorization, transformation)
-  end
-
-  @spec get_user_info(String.t()) :: any
-  def get_user_info(authorization) do
-    url = "#{@api}/me"
-
-    HTTPoison.get!(url, Authorization: authorization)
-    |> pick_body()
-    |> Jason.decode!()
-  end
-
-  defp fetch_all(url, authorization, transformation) do
+  def fetch_all(url, authorization, transformation) do
     fetch_loop(url, authorization, [], transformation)
   end
 
@@ -61,12 +35,5 @@ defmodule Spotify_API do
       nil -> elements
       _ -> fetch_loop(next_url, authorization, elements, transformation)
     end
-  end
-
-  @spec get_episodes_by_show_id(String.t(), String.t()) :: list
-  def get_episodes_by_show_id(authorization, show_id) do
-    url = "#{@api}/shows/#{show_id}/episodes"
-    transform = fn r -> Enum.map(r, &episode_main_info/1) end
-    fetch_all(url, authorization, transform)
   end
 end
