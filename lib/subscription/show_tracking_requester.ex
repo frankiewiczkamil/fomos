@@ -28,9 +28,13 @@ defmodule Subscription.ShowTrackingRequester do
 
   defp init_subscriptions_from_db(sub_id) do
     Logger.debug("Add #{sub_id}'s shows")
-    [{_id, shows} | _] = Subscription.Repo.get(sub_id)
+    [{_id, shows, _timestamp} | _] = Subscription.Repo.get(sub_id)
     Logger.debug("Found #{length(shows)} shows to be saved")
-    Enum.map(shows, &request_tracking/1)
+
+    shows
+    # tmp filter for dev purposes
+    |> Enum.slice(0, 1)
+    |> Enum.map(&request_tracking/1)
 
     next_sub_id = Subscription.Repo.next(sub_id)
     init_subscriptions_from_db(next_sub_id)
