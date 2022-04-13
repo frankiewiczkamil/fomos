@@ -2,11 +2,6 @@ defmodule Spotify_API do
   # dev mode only, tmp
   @api "https://api.spotify.com/v1"
 
-  @type show_main_info :: %{
-          id: String.t(),
-          name: String.t()
-        }
-
   def api_url(), do: @api
 
   def pick_body(%{body: body}), do: body
@@ -14,6 +9,12 @@ defmodule Spotify_API do
 
   def fetch_all(url, authorization, transformation) do
     fetch_loop(url, authorization, [], transformation)
+  end
+
+  def fetch(url, authorization) do
+    HTTPoison.get!(url, Authorization: authorization)
+    |> pick_body()
+    |> Jason.decode!()
   end
 
   defp fetch_loop(url, authorization, elements, transformation) do
