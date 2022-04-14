@@ -17,9 +17,9 @@ defmodule Show.TrackingCoordinator do
   end
 
   defp start_tracking(state, show_id) do
-    {number_of_subscribers, tracker_pid} =
+    %{number_of_subscribers: number_of_subscribers, tracker_pid: tracker_pid} =
       case el = Map.get(state, show_id) do
-        nil -> {0, nil}
+        nil -> %{number_of_subscribers: 0, tracker_pid: nil}
         _ -> el
       end
 
@@ -30,21 +30,24 @@ defmodule Show.TrackingCoordinator do
     new_value =
       case number_of_subscribers do
         0 ->
-          {:ok, pid} = Task.start_link(fn -> track(show_id) end)
-          {1, pid}
+          {:ok, fired_pid} = Task.start_link(fn -> track(show_id) end)
+          %{number_of_subscribers: 1, tracker_pid: fired_pid}
 
         _ ->
-          {number_of_subscribers + 1, tracker_pid}
+          %{number_of_subscribers: number_of_subscribers + 1, tracker_pid: tracker_pid}
       end
 
-    # todo spin tracking impl
     Map.put(state, show_id, new_value)
   end
 
   defp track(show_id) do
     Logger.debug(" * track_worker #{show_id}")
-    # user-read-playback-position grant is required o,o
     auth = Auth.get_dev_token()
+    res = Show.SpotifyApiClient.get_show(auth, show_id)
+    IO.inspect("fetched show data:")
+    IO.inspect(res)
+
+    # user-read-playback-position grant is required o,o
     # r = Episode.SpotifyApiClient.get_episodes_by_show_id(auth, show_id)
 
     # r
