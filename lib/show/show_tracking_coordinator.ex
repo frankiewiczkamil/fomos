@@ -43,17 +43,36 @@ defmodule Show.TrackingCoordinator do
   defp track(show_id) do
     Logger.debug(" * track_worker #{show_id}")
     auth = Auth.get_dev_token()
-    res = Show.SpotifyApiClient.get_show(auth, show_id)
-    IO.inspect("fetched show data:")
-    IO.inspect(res)
+    fetched_show = Show.SpotifyApiClient.get_show(auth, show_id)
+    %{show: saved_show} = Show.Repo.get_by_id(fetched_show[:id])
+    Logger.debug("fetched show data:")
+    IO.inspect(fetched_show)
 
-    # user-read-playback-position grant is required o,o
-    # r = Episode.SpotifyApiClient.get_episodes_by_show_id(auth, show_id)
+    unless(saved_show[:total_episodes] === fetched_show[:total_episodes]) do
+      Logger.debug("show's total_episodes changed - episodes fetch is required")
 
-    # r
-    # |> Enum.map(fn %{name: name, release_date: release_date} ->
-    #   Logger.debug("#{release_date} #{name}")
-    # end)
+      # if(Episode.Repo.get_by_date())
+
+      # user-read-playback-position grant is required o,o
+      # naive, brute force: fetch all
+      r = Episode.SpotifyApiClient.get_episodes_by_show_id(auth, show_id)
+
+      # r
+      # |> Enum.map(fn %{
+      #                  name: name,
+      #                  release_date: release_date
+      #                } ->
+      #   Logger.debug("#{release_date} #{name}")
+      # end)
+
+      r |> Enum.map(&Episode.Repo.save/1)
+
+      Show.Repo.save(fetched_show, :os.system_time(:millisecond))
+    end
+
+    if(saved_show[:total_episodes] === fetched_show[:total_episodes]) do
+      Logger.debug("show's total_episodes not changed")
+    end
 
     Process.sleep(3000_000)
     track(show_id)

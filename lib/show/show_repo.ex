@@ -9,9 +9,9 @@ defmodule Show.Repo do
   def get_by_id(id) do
     table = init()
 
-    case result = :dets.lookup(table, id) do
+    case :dets.lookup(table, id) do
       [] -> %{show: nil, updated: nil}
-      _ -> result
+      [{_, show, updated}] -> %{show: show, updated: updated}
     end
   end
 

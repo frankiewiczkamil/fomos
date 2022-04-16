@@ -2,7 +2,7 @@ defmodule Auth.ClientCredentials do
   @base_url "https://accounts.spotify.com"
   @token_url "#{@base_url}/api/token"
 
-  # todo cleanup all the auth stuff
+  # todo make it a genserver process
 
   def get_auth_header do
     client_id = Application.fetch_env!(:fomos, :spotify_app_client_id)
