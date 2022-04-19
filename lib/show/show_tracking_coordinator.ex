@@ -48,33 +48,43 @@ defmodule Show.TrackingCoordinator do
     Logger.debug("fetched show data:")
     IO.inspect(fetched_show)
 
-    unless(saved_show[:total_episodes] === fetched_show[:total_episodes]) do
+    # todo move to repo or service
+    saved_show_total_episodes =
+      case saved_show do
+        nil -> 0
+        _ -> saved_show[:total_episodes]
+      end
+
+    fetched_show_total_episodes = fetched_show[:total_episodes]
+
+    unless(saved_show_total_episodes === fetched_show_total_episodes) do
       Logger.debug("show's total_episodes changed - episodes fetch is required")
+      diff = fetched_show_total_episodes - saved_show_total_episodes
 
-      # if(Episode.Repo.get_by_date())
-
-      # user-read-playback-position grant is required o,o
-      # naive, brute force: fetch all
-      r = Episode.SpotifyApiClient.get_episodes_by_show_id(auth, show_id)
-
-      # r
-      # |> Enum.map(fn %{
-      #                  name: name,
-      #                  release_date: release_date
-      #                } ->
-      #   Logger.debug("#{release_date} #{name}")
-      # end)
-
-      r |> Enum.map(&Episode.Repo.save/1)
+      pages = Spotify_API.create_pagination_parameters(diff, 10)
+      fetch_and_store_episodes(pages, show_id, auth)
 
       Show.Repo.save(fetched_show, :os.system_time(:millisecond))
     end
 
-    if(saved_show[:total_episodes] === fetched_show[:total_episodes]) do
-      Logger.debug("show's total_episodes not changed")
-    end
+    # if(saved_show[:total_episodes] === fetched_show[:total_episodes]) do
+    #   Logger.debug("show's total_episodes not changed")
+    # end
 
     Process.sleep(3000_000)
     track(show_id)
+  end
+
+  def fetch_and_store_episodes([%{limit: limit, offset: offset} | other_pages], show_id, auth) do
+    # todo [iterate backwards and] check total episodes each time, since it can increase during the process...
+
+    # user-read-playback-position grant is required o,o
+    Episode.SpotifyApiClient.get_episodes_by_show_id(auth, show_id, offset, limit)
+    |> Enum.map(&Episode.Repo.save/1)
+
+    case other_pages do
+      [] -> :done
+      _ -> fetch_and_store_episodes(other_pages, show_id, auth)
+    end
   end
 end
