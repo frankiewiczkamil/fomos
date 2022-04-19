@@ -6,6 +6,12 @@ defmodule Episode.SpotifyApiClient do
     Spotify_API.fetch_all(url, authorization, transform)
   end
 
+  def get_episodes_by_show_id(authorization, show_id, offset, limit) do
+    url = "#{Spotify_API.api_url()}/shows/#{show_id}/episodes"
+    transform = fn r -> Enum.map(r, &episode_main_info/1) end
+    Spotify_API.fetch(url, authorization, offset, limit, transform)
+  end
+
   defp episode_main_info(%{"release_date" => release_date, "name" => name}) do
     %{release_date: release_date, name: name}
   end

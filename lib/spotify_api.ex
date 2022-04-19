@@ -15,6 +15,12 @@ defmodule Spotify_API do
     fetch("#{url}?limit=#{limit}&offset=#{offset}", authorization)
   end
 
+  def fetch(url, authorization, offset, limit, transformation) do
+    fetch(url, authorization, offset, limit)
+    |> pick_items()
+    |> transformation.()
+  end
+
   def create_pagination_parameters(elements_to_fetch, page_size) do
     division = div(elements_to_fetch, page_size)
     remainder = rem(elements_to_fetch, page_size)
@@ -38,7 +44,7 @@ defmodule Spotify_API do
     aliquotes ++ rest
   end
 
-  def pagination_parameters(offset, limit), do: %{offset: offset, limit: limit}
+  defp pagination_parameters(offset, limit), do: %{offset: offset, limit: limit}
 
   def fetch(url, authorization) do
     HTTPoison.get!(url, Authorization: authorization)
