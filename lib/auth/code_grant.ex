@@ -11,40 +11,25 @@ defmodule Auth.Code do
   end
 
   def fetch_token(code, redirect_url) do
-    client_id = Application.fetch_env!(:fomos, :spotify_app_client_id)
-    secret = Application.fetch_env!(:fomos, :spotify_app_secret)
-
-    basic_auth = Base.encode64("#{client_id}:#{secret}")
-
-    headers = [
-      {"Authorization", "Basic #{basic_auth}"},
-      {"Content-Type", "application/x-www-form-urlencoded; charset=utf-8"}
-    ]
-
     payload = %{
       "grant_type" => "authorization_code",
       "redirect_uri" => redirect_url,
       "code" => code
     }
 
-    request_body = URI.encode_query(payload)
-
-    # todo handle error scenario
-
-    result =
-      HTTPoison.post(
-        @token_url,
-        request_body,
-        headers
-      )
-      |> pick_body()
-      |> Jason.decode!()
-
-    IO.inspect(result)
-    result
+    fetch_token(payload)
   end
 
-  def fetch_token(refresh_token) do
+  def fetch_token(refresh_token) when is_bitstring(refresh_token) do
+    payload = %{
+      "grant_type" => "refresh_token",
+      "refresh_token" => refresh_token
+    }
+
+    fetch_token(payload)
+  end
+
+  def fetch_token(payload) when is_map(payload) do
     client_id = Application.fetch_env!(:fomos, :spotify_app_client_id)
     secret = Application.fetch_env!(:fomos, :spotify_app_secret)
 
@@ -55,11 +40,6 @@ defmodule Auth.Code do
       {"Content-Type", "application/x-www-form-urlencoded; charset=utf-8"}
     ]
 
-    payload = %{
-      "grant_type" => "refresh_token",
-      "refresh_token" => refresh_token
-    }
-
     request_body = URI.encode_query(payload)
 
     # todo handle error scenario
@@ -73,7 +53,8 @@ defmodule Auth.Code do
       |> pick_body()
       |> Jason.decode!()
 
-    IO.inspect(result)
+    # IO.inspect(payload)
+    # IO.inspect(result)
     result
   end
 
