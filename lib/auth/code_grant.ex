@@ -44,5 +44,38 @@ defmodule Auth.Code do
     result
   end
 
+  def fetch_token(refresh_token) do
+    client_id = Application.fetch_env!(:fomos, :spotify_app_client_id)
+    secret = Application.fetch_env!(:fomos, :spotify_app_secret)
+
+    basic_auth = Base.encode64("#{client_id}:#{secret}")
+
+    headers = [
+      {"Authorization", "Basic #{basic_auth}"},
+      {"Content-Type", "application/x-www-form-urlencoded; charset=utf-8"}
+    ]
+
+    payload = %{
+      "grant_type" => "refresh_token",
+      "refresh_token" => refresh_token
+    }
+
+    request_body = URI.encode_query(payload)
+
+    # todo handle error scenario
+
+    result =
+      HTTPoison.post(
+        @token_url,
+        request_body,
+        headers
+      )
+      |> pick_body()
+      |> Jason.decode!()
+
+    IO.inspect(result)
+    result
+  end
+
   defp pick_body({_, %{:body => body}}), do: body
 end
