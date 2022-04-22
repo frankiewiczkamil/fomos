@@ -13,10 +13,9 @@ defmodule FomosWeb.SubscriptionController do
   def callback(conn, %{"code" => code}) do
     callback_url = Routes.subscription_url(conn, :callback)
 
-    result = Auth.Code.fetch_token(code, callback_url)
+    token_response = Auth.Code.fetch_token(code, callback_url)
 
-    authorization = "#{result["token_type"]} #{result["access_token"]}"
-    result = Subscription.Service.subscribe(authorization)
+    result = Subscription.Service.subscribe(token_response)
 
     json(conn, result)
   end

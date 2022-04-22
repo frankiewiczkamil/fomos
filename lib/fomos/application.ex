@@ -15,9 +15,13 @@ defmodule Fomos.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Fomos.PubSub},
       # Start the Endpoint (http/https)
-      FomosWeb.Endpoint
+      FomosWeb.Endpoint,
+      Subscribtion.Token.Repo,
       # Start a worker by calling: Fomos.Worker.start_link(arg)
       # {Fomos.Worker, arg}
+      # Show.TrackingCoordinator,
+      # Subscription.ShowTrackingRequester,
+      Show.TrackingHandler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
