@@ -19,7 +19,6 @@ defmodule Subscribtion.Token.Repo do
   end
 
   def handle_call({:get_token_metadata, user_id}, _from, state) do
-    IO.inspect(state)
     {:reply, Map.get(state, user_id), state}
   end
 

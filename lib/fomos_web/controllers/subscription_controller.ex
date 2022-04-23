@@ -1,6 +1,9 @@
 defmodule FomosWeb.SubscriptionController do
   use FomosWeb, :controller
 
+  # todo decide what is the relation between subscribing and obtaining a token
+  # it seems it would be best to create auth service that will take care of storing data and (maybe) refreshing the token
+
   @spec subscribe(Plug.Conn.t(), any) :: Plug.Conn.t()
   def subscribe(conn, _params) do
     callback_url = Routes.subscription_url(conn, :callback)
