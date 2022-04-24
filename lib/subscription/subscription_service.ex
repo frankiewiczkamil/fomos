@@ -22,18 +22,15 @@ defmodule Subscription.Service do
     %{"refresh_token" => refresh_token, "expires_in" => expires_in} =
       Subscribtion.Token.Repo.get(user_id)
 
-    Process.sleep(3 * 1_000)
-    # tkn = Subscribtion.Token.Repo.get(user_id)
-    # Logger.debug("refresh token for user: #{user_id} #{refresh_token}")
-    token_response = Auth.Code.fetch_token(refresh_token)
+    Process.sleep(expires_in * 1_000)
+    Logger.debug("refresh token for user: #{user_id}")
+    token_metadata = case token_response = Auth.Code.fetch_token(refresh_token) do
+      %{"refresh_token" => _} -> token_response
+      _ -> Map.put(token_response, "refresh_token", refresh_token)
+    end
 
-    Subscribtion.Token.Repo.save(
-      user_id,
-      Map.put(token_response, "refresh_token", refresh_token)
-    )
+    Subscribtion.Token.Repo.save(user_id, token_metadata)
 
-    # Logger.debug("response: ")
-    # IO.inspect(token_response)
     refresh_token(user_id)
   end
 end
