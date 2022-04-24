@@ -31,17 +31,19 @@ defmodule Subscription.ShowTrackingRequester do
     [{_id, shows, _timestamp} | _] = Subscription.Repo.get(sub_id)
     Logger.debug("Found #{length(shows)} shows to be saved")
 
+    request_tracking_subscriber = fn show_id -> request_tracking(show_id, sub_id) end
+
     shows
     # tmp filter for dev purposes
     |> Enum.slice(0, 1)
-    |> Enum.map(&request_tracking/1)
+    |> Enum.map(request_tracking_subscriber)
 
     next_sub_id = Subscription.Repo.next(sub_id)
     init_subscriptions_from_db(next_sub_id)
   end
 
-  defp request_tracking(show_id) do
+  defp request_tracking(show_id, subscriber_id) do
     Logger.notice(" - #{show_id}")
-    GenServer.call(ShowTrackingCoordinator, {:track, show_id})
+    GenServer.call(ShowTrackingCoordinator, {:track, show_id, subscriber_id})
   end
 end

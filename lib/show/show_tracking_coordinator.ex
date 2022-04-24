@@ -10,13 +10,13 @@ defmodule Show.TrackingCoordinator do
     {:ok, state}
   end
 
-  def handle_call({:track, show_id}, _from, state) do
+  def handle_call({:track, show_id, subscriber_id}, _from, state) do
     Logger.debug("tracking show #{show_id} requested")
-    new_state = start_tracking(state, show_id)
+    new_state = start_tracking(state, show_id, subscriber_id)
     {:reply, :ok, new_state}
   end
 
-  defp start_tracking(state, show_id) do
+  defp start_tracking(state, show_id, subscriber_id) do
     %{number_of_subscribers: number_of_subscribers, tracker_pid: tracker_pid} =
       case el = Map.get(state, show_id) do
         nil -> %{number_of_subscribers: 0, tracker_pid: nil}
@@ -30,7 +30,7 @@ defmodule Show.TrackingCoordinator do
     new_value =
       case number_of_subscribers do
         0 ->
-          {:ok, fired_pid} = Task.start_link(fn -> track(show_id) end)
+          {:ok, fired_pid} = Task.start_link(fn -> track(show_id, subscriber_id) end)
           %{number_of_subscribers: 1, tracker_pid: fired_pid}
 
         _ ->
@@ -40,9 +40,9 @@ defmodule Show.TrackingCoordinator do
     Map.put(state, show_id, new_value)
   end
 
-  defp track(show_id) do
+  defp track(show_id, subscriber_id) do
     Logger.debug(" * track_worker #{show_id}")
-    auth = Auth.get_dev_token()
+    auth = get_auth(subscriber_id)
     fetched_show = Show.SpotifyApiClient.get_show(auth, show_id)
     %{show: saved_show} = Show.Repo.get_by_id(fetched_show[:id])
     Logger.debug("fetched show data:")
@@ -72,7 +72,19 @@ defmodule Show.TrackingCoordinator do
     # end
 
     Process.sleep(3000_000)
-    track(show_id)
+    track(show_id, subscriber_id)
+  end
+
+  def get_auth(subscriber_id) do
+    case auth = Subscribtion.Token.Repo.get_auth(subscriber_id) do
+      nil ->
+        Process.sleep(10_000)
+        Logger.debug("missing token for subscriber #{subscriber_id}")
+        get_auth(subscriber_id)
+
+      _ ->
+        auth
+    end
   end
 
   def fetch_and_store_episodes([%{limit: limit, offset: offset} | other_pages], show_id, auth) do

@@ -10,6 +10,16 @@ defmodule Subscribtion.Token.Repo do
     GenServer.cast(SubscriberTokenRepo, {:save_token_metadata, user_id, token_metadata})
   end
 
+  def get_auth(user_id) do
+    case get(user_id) do
+      %{"token_type" => type, "access_token" => token} ->
+        "#{type} #{token}"
+
+      _ ->
+        nil
+    end
+  end
+
   def get(user_id) do
     GenServer.call(SubscriberTokenRepo, {:get_token_metadata, user_id})
   end
