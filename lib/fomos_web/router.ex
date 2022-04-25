@@ -20,6 +20,7 @@ defmodule FomosWeb.Router do
     get("/", PageController, :index)
     get("/callback", SubscriptionController, :callback)
     get("/subscribe", SubscriptionController, :subscribe)
+    get("/episodes", EpisodeController, :get_by_date)
   end
 
   # Other scopes may use custom stacks.
