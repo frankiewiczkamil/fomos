@@ -17,6 +17,7 @@ defmodule Fomos.Application do
       # Start the Endpoint (http/https)
       FomosWeb.Endpoint,
       Spotify_API,
+      Show.Tracking.Executor,
       Subscribtion.Token.Repo,
       # Start a worker by calling: Fomos.Worker.start_link(arg)
       # {Fomos.Worker, arg}
