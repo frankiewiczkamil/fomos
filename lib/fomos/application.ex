@@ -16,6 +16,7 @@ defmodule Fomos.Application do
       {Phoenix.PubSub, name: Fomos.PubSub},
       # Start the Endpoint (http/https)
       FomosWeb.Endpoint,
+      Spotify_API,
       Subscribtion.Token.Repo,
       # Start a worker by calling: Fomos.Worker.start_link(arg)
       # {Fomos.Worker, arg}

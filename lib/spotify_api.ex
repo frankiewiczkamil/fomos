@@ -1,8 +1,22 @@
 defmodule Spotify_API do
-  # dev mode only, tmp
+  use GenServer
+  require Logger
   @api "https://api.spotify.com/v1"
 
   def api_url(), do: @api
+
+  def start_link(_opts) do
+    GenServer.start_link(__MODULE__, %{}, name: SpotifyAPI)
+  end
+
+  def init(state) do
+    {:ok, state}
+  end
+
+  def handle_call({url, auth}, _from, state) do
+    Logger.debug("fetch #{url} requested")
+    {:reply, fetch_handler(url, auth), state}
+  end
 
   def pick_body(%{body: body}), do: body
   def pick_items(%{"items" => items}), do: items
@@ -47,16 +61,18 @@ defmodule Spotify_API do
   defp pagination_parameters(offset, limit), do: %{offset: offset, limit: limit}
 
   def fetch(url, authorization) do
+    # spotify limits amount of parallel requests and responds 429 when flooded
+    GenServer.call(SpotifyAPI, {url, authorization})
+  end
+
+  def fetch_handler(url, authorization) do
     HTTPoison.get!(url, Authorization: authorization)
     |> pick_body()
     |> Jason.decode!()
   end
 
   defp fetch_loop(url, authorization, elements, transformation) do
-    response =
-      HTTPoison.get!(url, Authorization: authorization)
-      |> pick_body()
-      |> Jason.decode!()
+    response = fetch(url, authorization)
 
     new_elements =
       response
