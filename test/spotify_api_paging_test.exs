@@ -7,7 +7,7 @@ defmodule Spotify_API_Test do
       %{offset: 0, limit: 5}
     ]
 
-    result = Spotify_API.create_pagination_parameters(5, 5)
+    result = Spotify_API.Paging.create_paging_parameters(5, 5)
     assert(expected == result)
   end
 
@@ -16,7 +16,7 @@ defmodule Spotify_API_Test do
       %{offset: 0, limit: 3}
     ]
 
-    result = Spotify_API.create_pagination_parameters(3, 5)
+    result = Spotify_API.Paging.create_paging_parameters(3, 5)
     assert(expected == result)
   end
 
@@ -28,7 +28,7 @@ defmodule Spotify_API_Test do
       %{offset: 15, limit: 2}
     ]
 
-    result = Spotify_API.create_pagination_parameters(17, 5)
+    result = Spotify_API.Paging.create_paging_parameters(17, 5)
     assert(expected == result)
   end
 
@@ -39,7 +39,7 @@ defmodule Spotify_API_Test do
       %{offset: 10, limit: 5}
     ]
 
-    result = Spotify_API.create_pagination_parameters(15, 5)
+    result = Spotify_API.Paging.create_paging_parameters(15, 5)
     assert(expected == result)
   end
 end
