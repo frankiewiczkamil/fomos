@@ -1,5 +1,28 @@
 defmodule Spotify_API.Paging do
-  def create_paging_parameters(elements_to_fetch, page_size) do
+  def create_paging_parameters_desc(elements_to_fetch, page_size) do
+    division = div(elements_to_fetch, page_size)
+    remainder = rem(elements_to_fetch, page_size)
+
+    rest =
+      case remainder do
+        0 -> []
+        _ -> [paging_parameters(0, remainder)]
+      end
+
+    aliquotes =
+      case division do
+        0 ->
+          []
+
+        _ ->
+          Enum.map(division..1, fn x -> (x - 1) * page_size + remainder end)
+          |> Enum.map(fn offset -> %{offset: offset, limit: page_size} end)
+      end
+
+    aliquotes ++ rest
+  end
+
+  def create_paging_parameters_asc(elements_to_fetch, page_size) do
     division = div(elements_to_fetch, page_size)
     remainder = rem(elements_to_fetch, page_size)
 

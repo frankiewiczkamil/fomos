@@ -33,12 +33,15 @@ defmodule Show.Tracking.Executor do
       end
 
     fetched_show_total_episodes = fetched_show[:total_episodes]
+    Logger.debug("saved show's total_episodes: #{saved_show_total_episodes}")
+    Logger.debug("actual show's total_episodes: #{fetched_show_total_episodes})")
 
     unless(saved_show_total_episodes === fetched_show_total_episodes) do
-      Logger.debug("show's total_episodes changed - episodes fetch is required")
+      Logger.debug("saved != current - perform sync")
+
       diff = fetched_show_total_episodes - saved_show_total_episodes
 
-      pages = Spotify_API.Paging.create_paging_parameters(diff, min(diff, @page_size))
+      pages = Spotify_API.Paging.create_paging_parameters_desc(diff, min(diff, @page_size))
       fetch_and_store_episodes(pages, show_id, auth)
 
       Show.Repo.save(fetched_show, :os.system_time(:millisecond))
