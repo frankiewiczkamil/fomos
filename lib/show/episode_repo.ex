@@ -14,6 +14,18 @@ defmodule Episode.Repo do
     {:reply, :dets.lookup(table, date), table}
   end
 
+  def handle_call({:get_by_show_id, show_id}, _from, table) do
+    query = [
+      {
+        {:_, %{show_id: show_id}},
+        [],
+        [{:element, 2, :"$_"}]
+      }
+    ]
+
+    {:reply, :dets.select(table, query), table}
+  end
+
   def handle_call(:get_all_keys, _from, table) do
     result = get_next(:dets.first(table), [], table)
     {:reply, result, table}
@@ -31,6 +43,10 @@ defmodule Episode.Repo do
 
   def get_by_date(date) do
     GenServer.call(EpisodeRepo, {:get_by_date, date})
+  end
+
+  def get_by_show_id(show_id) do
+    GenServer.call(EpisodeRepo, {:get_by_show_id, show_id})
   end
 
   def get_all_keys() do
