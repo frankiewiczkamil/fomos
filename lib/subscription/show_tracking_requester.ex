@@ -34,8 +34,6 @@ defmodule Subscription.ShowTrackingRequester do
     request_tracking_subscriber = fn show_id -> request_tracking(show_id, sub_id) end
 
     shows
-    # tmp filter for dev purposes
-    |> Enum.slice(0, 1)
     |> Enum.map(request_tracking_subscriber)
 
     next_sub_id = Subscription.Repo.next(sub_id)
