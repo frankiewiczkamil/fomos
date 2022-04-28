@@ -20,6 +20,7 @@ defmodule Spotify_API do
 
   def pick_body(%{body: body}), do: body
   def pick_items(%{"items" => items}), do: items
+  def pick_total(%{"total" => total}), do: total
 
   def fetch_all(url, authorization, transformation) do
     fetch_loop(url, authorization, [], transformation)
