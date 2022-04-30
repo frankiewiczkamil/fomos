@@ -38,10 +38,11 @@ defmodule Spotify_API do
 
   def fetch(url, authorization) do
     # spotify limits amount of parallel requests and responds 429 when flooded
+    Process.sleep(100)
     GenServer.call(SpotifyAPI, {url, authorization})
   end
 
-  def fetch_handler(url, authorization) do
+  defp fetch_handler(url, authorization) do
     HTTPoison.get!(url, Authorization: authorization)
     |> pick_body()
     |> Jason.decode!()

@@ -13,7 +13,7 @@ defmodule Show.Repo do
   def handle_call({:get_by_id, show_id}, _from, table) do
     result =
       case(:dets.lookup(table, show_id)) do
-        [] -> %{show: nil, updated: nil}
+        [] -> nil
         [{_, show, updated}] -> %{show: show, updated: updated}
       end
 

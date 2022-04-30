@@ -13,6 +13,10 @@ defmodule Subscription.Service do
     Subscription.Repo.store(user_id, show_ids)
     Subscribtion.Token.Repo.save(user_id, token_response)
 
+    auth = Subscribtion.Token.Repo.get_auth(user_id)
+    sync_if_not_exist = fn show_id -> Show.Service.sync_if_not_exist(show_id, auth) end
+    show_ids |> Enum.map(sync_if_not_exist)
+
     # todo add sending msg to requester, so it fires tracking shows that are currently not tracked
     spawn(fn -> refresh_token(user_id) end)
     %{user_id: user_id, showz: show_ids}
@@ -24,10 +28,12 @@ defmodule Subscription.Service do
 
     Process.sleep(expires_in * 1_000)
     Logger.debug("refresh token for user: #{user_id}")
-    token_metadata = case token_response = Auth.Code.fetch_token(refresh_token) do
-      %{"refresh_token" => _} -> token_response
-      _ -> Map.put(token_response, "refresh_token", refresh_token)
-    end
+
+    token_metadata =
+      case token_response = Auth.Code.fetch_token(refresh_token) do
+        %{"refresh_token" => _} -> token_response
+        _ -> Map.put(token_response, "refresh_token", refresh_token)
+      end
 
     Subscribtion.Token.Repo.save(user_id, token_metadata)
 
