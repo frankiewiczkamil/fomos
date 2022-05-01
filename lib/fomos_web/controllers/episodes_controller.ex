@@ -1,6 +1,12 @@
 defmodule FomosWeb.EpisodeController do
   use FomosWeb, :controller
 
+  def get_id_by_date(conn, %{"date" => date}) do
+    date
+    |> Episode.Service.get_id_by_date()
+    |> respond_factory(conn).()
+  end
+
   def get_by_date(conn, %{"date" => date}) do
     date
     |> Episode.Service.get_by_date()

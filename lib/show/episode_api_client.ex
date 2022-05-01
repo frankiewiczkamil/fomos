@@ -18,9 +18,12 @@ defmodule Episode.SpotifyApiClient do
     |> episodes_main_info_and_total_factory(show_id).()
   end
 
+  # "external_urls": {
+  #   "spotify": "https://open.spotify.com/show/3CBMe6U1KxJeZ7u3BcKFtf"
+  # },
   defp episode_main_info_factory(show_id) do
-    fn %{"release_date" => release_date, "name" => name} ->
-      %{release_date: release_date, name: name, show_id: show_id}
+    fn %{"release_date" => release_date, "name" => name, "id" => id} ->
+      %{release_date: release_date, name: name, show_id: show_id, id: id}
     end
   end
 
