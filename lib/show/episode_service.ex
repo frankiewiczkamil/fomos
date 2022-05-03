@@ -28,6 +28,7 @@ defmodule Episode.Service do
   def get_by_date(date, transformation) do
     case result = Episode.Repo.get_by_date(date) do
       {:error, reason} -> %{"error" => reason}
+      [] -> result |> transformation.()
       [_ | _] -> result |> transformation.()
     end
   end
