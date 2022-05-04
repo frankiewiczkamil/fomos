@@ -35,12 +35,15 @@ defmodule Episode.Service do
 
   defp pick_episode({_date, episode}), do: episode
   defp pick_show_id(%{show_id: show_id}), do: show_id
-  defp pick_name(%{name: name}), do: name
+
+  defp pick_episode_human_readable_data(episode) do
+    %{name: episode[:name], duration: episode[:duration], uri: episode[:uri]}
+  end
 
   defp to_human_readable({show_id, episodes}) do
     {
       show_id |> Show.Repo.get_show_name(),
-      episodes |> Enum.map(&pick_name/1)
+      episodes |> Enum.map(&pick_episode_human_readable_data/1)
     }
   end
 end
