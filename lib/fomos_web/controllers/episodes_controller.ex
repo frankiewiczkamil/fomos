@@ -7,14 +7,14 @@ defmodule FomosWeb.EpisodeController do
     |> respond_factory(conn).()
   end
 
+  def get_by_date(conn, %{"date" => date, "days" => days}) do
+    get_by_date(conn, Date.from_iso8601!(date), days)
+  end
+
   def get_by_date(conn, %{"date" => date}) do
     date
     |> Episode.Service.get_by_date()
     |> respond_factory(conn).()
-  end
-
-  def get_by_date(conn, %{"date" => date, "days" => days}) do
-    get_by_date(conn, Date.from_iso8601!(date), days)
   end
 
   def get_by_date(conn, %{"days" => days}) do
