@@ -8,7 +8,7 @@ defmodule Episode.Service do
 
   defp epoisodes_to_episode_ids(episodes) do
     episodes
-    |> Enum.map(&pick_episode/1)
+    |> Enum.map(&pick_episode_id/1)
   end
 
   def get_by_date(date) do
@@ -34,6 +34,7 @@ defmodule Episode.Service do
   end
 
   defp pick_episode({_date, episode}), do: episode
+  defp pick_episode_id({_date, %{id: id}}), do: id
   defp pick_show_id(%{show_id: show_id}), do: show_id
 
   defp pick_episode_human_readable_data(episode) do
