@@ -12,10 +12,10 @@ defmodule Episode.Service do
   end
 
   def get_by_date(date) do
-    get_by_date(date, &epoisodes_to_grouped_episodes/1)
+    get_by_date(date, &episodes_to_grouped_episodes/1)
   end
 
-  defp epoisodes_to_grouped_episodes(episodes) do
+  defp episodes_to_grouped_episodes(episodes) do
     episodes
     |> Enum.map(&pick_episode/1)
     |> Enum.group_by(&pick_show_id/1)
@@ -31,7 +31,7 @@ defmodule Episode.Service do
 
     get_by_date_generic(
       "2022-05-05",
-      &epoisodes_to_grouped_episodes/1,
+      &episodes_to_grouped_episodes/1,
       filter_factory(my_filter_fn)
     )
   end
@@ -39,7 +39,7 @@ defmodule Episode.Service do
   def get_by_date_test() do
     get_by_date_generic(
       "2022-05-05",
-      &epoisodes_to_grouped_episodes/1,
+      &episodes_to_grouped_episodes/1,
       nil
     )
   end
