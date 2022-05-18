@@ -24,6 +24,52 @@ defmodule Episode.Service do
     |> Enum.into(%{})
   end
 
+  def get_by_date_test(show_id) do
+    my_filter_fn = fn episode_tuple ->
+      episode_tuple |> pick_episode() |> is_show_id_matching_factory(show_id).()
+    end
+
+    get_by_date_generic(
+      "2022-05-05",
+      &epoisodes_to_grouped_episodes/1,
+      filter_factory(my_filter_fn)
+    )
+  end
+
+  def get_by_date_test() do
+    get_by_date_generic(
+      "2022-05-05",
+      &epoisodes_to_grouped_episodes/1,
+      nil
+    )
+  end
+
+  defp get_by_date_generic(date, transformation, filter) do
+    case result = Episode.Repo.get_by_date(date) do
+      {:error, reason} ->
+        %{"error" => reason}
+
+      [] ->
+        []
+
+      [_ | _] ->
+        result
+        |> Enum.filter(filter_factory(filter))
+        |> transformation.()
+    end
+  end
+
+  defp filter_factory(filter) do
+    case filter do
+      nil -> fn result -> result end
+      _ -> filter
+    end
+  end
+
+  defp is_show_id_matching_factory(given_show_id) do
+    fn %{show_id: show_id} -> show_id === given_show_id end
+  end
+
   @spec get_by_date(any, any) :: any
   def get_by_date(date, transformation) do
     case result = Episode.Repo.get_by_date(date) do
