@@ -32,7 +32,7 @@ defmodule Episode.Service do
     get_by_date_generic(
       "2022-05-05",
       &episodes_to_grouped_episodes/1,
-      filter_factory(my_filter_fn)
+      my_filter_fn
     )
   end
 
@@ -54,15 +54,15 @@ defmodule Episode.Service do
 
       [_ | _] ->
         result
-        |> Enum.filter(filter_factory(filter))
+        |> filter_episodes(filter).()
         |> transformation.()
     end
   end
 
-  defp filter_factory(filter) do
-    case filter do
-      nil -> fn result -> result end
-      _ -> filter
+  defp filter_episodes(filter_fn) do
+    case filter_fn do
+      nil -> fn episodes -> episodes end
+      _ -> fn episodes -> Enum.filter(episodes, filter_fn) end
     end
   end
 
