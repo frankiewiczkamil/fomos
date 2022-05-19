@@ -27,3 +27,6 @@ fomos-*.tar
 
 **/*.secret.exs
 *.db
+
+/.idea/
+*.iml
