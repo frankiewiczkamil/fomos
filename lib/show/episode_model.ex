@@ -19,48 +19,26 @@ defmodule Episode.Model do
           },
           href: String.t(),
           id: String.t(),
-          # images: [
-          #   {
-          #     url: String.t(),
-          #     height: 300,
-          #     width: 300
-          #   }
-          # ],
+          images: list(spotify_image),
           is_externally_hosted: true,
           is_playable: true,
           language: String.t(),
-          # languages: [
-          #   fr,
-          #   en
-          # ],
-
+          languages: list(String.t()),
           name: String.t(),
           release_date: String.t(),
           release_date_precision: String.t(),
-
-          # resume_point: {
-          #   fully_played: true,
-          #   resume_position_ms: 0
-          # },
-
+          resume_point: %{
+            fully_played: boolean(),
+            resume_position_ms: number()
+          },
           type: String.t(),
           uri: String.t(),
-
-          # restrictions: {
-          #   reason: string
-          # },
-
+          restrictions: %{
+            reason: String.t()
+          },
           show: %{
-            # available_markets: [
-            #   string
-            # ],
-            # copyrights: [
-            #   {
-            #     text: string,
-            #     type: string
-            #   }
-            # ],
-
+            available_markets: list(String.t()),
+            copyrights: list(spotify_copyrights()),
             description: String.t(),
             html_description: String.t(),
             explicit: true,
@@ -69,23 +47,25 @@ defmodule Episode.Model do
             },
             href: String.t(),
             id: String.t(),
-
-            # images: [
-            #   {
-            #     url: https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228\n,
-            #     height: 300,
-            #     width: 300
-            #   }
-            # ],
+            images: list(spotify_image),
             is_externally_hosted: true,
-            # languages: [
-            #   string
-            # ],
+            languages: list(String.t()),
             media_type: String.t(),
             name: String.t(),
             publisher: String.t(),
             type: String.t(),
             uri: String.t()
           }
+        }
+
+  @type spotify_image :: %{
+          url: String.t(),
+          height: number(),
+          width: number()
+        }
+
+  @type spotify_copyrights :: %{
+          text: String.t(),
+          type: String.t()
         }
 end
