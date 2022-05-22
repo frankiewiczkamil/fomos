@@ -16,7 +16,7 @@ defmodule Fomos.Application do
       {Phoenix.PubSub, name: Fomos.PubSub},
       # Start the Endpoint (http/https)
       FomosWeb.Endpoint,
-      Episode.Repo,
+      Episode.Repo.GenServer,
       Show.Repo,
       Spotify_API,
       Show.Tracking.Executor,
