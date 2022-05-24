@@ -34,9 +34,10 @@ defmodule Show.Tracking.Executor do
     Logger.debug("saved show's total_episodes: #{saved_show_total_episodes}")
     Logger.debug("actual show's total_episodes: #{fetched_show_total_episodes})")
 
-    unless(saved_show_total_episodes === fetched_show_total_episodes) do
-      diff = fetched_show_total_episodes - saved_show_total_episodes
-      Logger.debug("saved != current, sync #{diff} episodes")
+    diff = fetched_show_total_episodes - saved_show_total_episodes
+
+    if(diff > 0) do
+      Logger.debug("saved < current, sync #{diff} episodes")
 
       page_size = min(diff, @page_size)
       pages = Spotify_API.Paging.create_paging_parameters_desc(diff, page_size)
