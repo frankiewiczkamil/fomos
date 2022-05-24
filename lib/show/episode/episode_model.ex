@@ -8,6 +8,12 @@ defmodule Episode.Model do
           duration: number()
         }
 
+  @type episode_mini :: %{
+          name: String.t(),
+          uri: String.t(),
+          duration: number()
+        }
+
   @type spotify_episode :: %{
           audio_preview_url: String.t(),
           description: String.t(),
