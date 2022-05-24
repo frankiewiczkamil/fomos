@@ -17,7 +17,7 @@ defmodule Fomos.Application do
       # Start the Endpoint (http/https)
       FomosWeb.Endpoint,
       Episode.Repo.GenServer,
-      Show.Repo,
+      Show.Repo.GenServer,
       Spotify_API,
       Show.Tracking.Executor,
       Subscribtion.Token.Repo,
