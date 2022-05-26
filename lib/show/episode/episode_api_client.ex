@@ -31,7 +31,7 @@ defmodule Episode.SpotifyApiClient do
   end
 
   @spec episode_main_info_factory(String.t()) ::
-          (Episode.Model.spotify_episode() -> Episode.Model.episode())
+          (Spotify.Model.episode() -> Episode.Model.episode())
   defp episode_main_info_factory(show_id) do
     fn episode ->
       %{

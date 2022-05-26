@@ -75,14 +75,13 @@ defmodule Episode.Service do
     fn %{show_id: show_id} -> show_id === given_show_id end
   end
 
-  @spec get_by_date(String.t(), (Episode.Model.spotify_episode() -> any)) :: any
+  @spec get_by_date(String.t(), (Spotify.Model.episode() -> any)) :: any
   def get_by_date(date, transformation) do
     Episode.Repo.get_by_date(date)
     |> transformation.()
   end
 
-  @spec pick_episode({String.t(), Episode.Model.spotify_episode()}) ::
-          Episode.Model.spotify_episode()
+  @spec pick_episode({String.t(), Spotify.Model.episode()}) :: Spotify.Model.episode()
   defp pick_episode({_date, episode}), do: episode
 
   @spec pick_episode_id({String.t(), %{id: String.t()}}) :: String.t()
