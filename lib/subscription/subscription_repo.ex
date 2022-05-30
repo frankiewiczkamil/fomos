@@ -9,7 +9,7 @@ defmodule Subscription.Repo do
     )
   end
 
-  @spec get(String.t()) :: {String.t(), list(String.t()), String.t(), DateTime.t()} | nil
+  @spec get(String.t()) :: {String.t(), list(String.t()), DateTime.t()} | nil
   def get(subscriber_id) do
     GenServer.call(SubscriptionRepo, {:get_by_id, subscriber_id})
   end

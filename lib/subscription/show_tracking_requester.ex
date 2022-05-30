@@ -28,7 +28,7 @@ defmodule Subscription.ShowTrackingRequester do
 
   defp init_subscriptions_from_db(sub_id) do
     Logger.debug("Add #{sub_id}'s shows")
-    [{_id, shows, _timestamp} | _] = Subscription.Repo.get(sub_id)
+    {_id, shows, _timestamp} = Subscription.Repo.get(sub_id)
     Logger.debug("Found #{length(shows)} shows to be saved")
 
     request_tracking_subscriber = fn show_id -> request_tracking(show_id, sub_id) end
