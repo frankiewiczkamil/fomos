@@ -18,6 +18,7 @@ defmodule Fomos.Application do
       FomosWeb.Endpoint,
       Episode.Repo.GenServer,
       Show.Repo.GenServer,
+      Subscription.Repo.GenServer,
       Spotify_API,
       Show.Tracking.Executor,
       Subscribtion.Token.Repo,

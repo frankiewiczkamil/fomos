@@ -1,40 +1,26 @@
 defmodule Subscription.Repo do
   require Logger
 
-  @spec store(String.t(), list) :: any
-  def store(id, shows) do
-    table = init()
-    :dets.insert(table, {id, shows, DateTime.utc_now()})
-    :ok
+  @spec save(String.t(), list(String.t())) :: :ok
+  def save(subscriber_id, show_ids) do
+    GenServer.cast(
+      SubscriptionRepo,
+      {:save, subscriber_id, show_ids, DateTime.utc_now()}
+    )
   end
 
-  def get(id) do
-    table = init()
-    :dets.lookup(table, id)
+  @spec get(String.t()) :: {String.t(), list(String.t()), String.t(), DateTime.t()} | nil
+  def get(subscriber_id) do
+    GenServer.call(SubscriptionRepo, {:get_by_id, subscriber_id})
   end
 
+  @spec first() :: String.t() | nil
   def first() do
-    table = init()
-
-    case first_id = :dets.first(table) do
-      :"$end_of_table" -> nil
-      _ -> first_id
-    end
+    GenServer.call(SubscriptionRepo, :get_first)
   end
 
   @spec next(String.t()) :: String.t() | nil
-  def next(id) do
-    table = init()
-
-    case next_id = :dets.next(table, id) do
-      :"$end_of_table" -> nil
-      _ -> next_id
-    end
-  end
-
-  defp init() do
-    # todo change this module into genserver or sth like that
-    {:ok, table} = :dets.open_file(:"subscription.db", type: :set)
-    table
+  def next(previous_subscriber_id) do
+    GenServer.call(SubscriptionRepo, {:get_next, previous_subscriber_id})
   end
 end

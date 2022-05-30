@@ -10,7 +10,7 @@ defmodule Subscription.Service do
     %{"id" => user_id} = Subscribtion.UserSpotifyApiClient.get_user_info(authorization)
 
     show_ids = shows |> Enum.map(&pick_id/1)
-    Subscription.Repo.store(user_id, show_ids)
+    Subscription.Repo.save(user_id, show_ids)
     Subscribtion.Token.Repo.save(user_id, token_response)
 
     auth = Subscribtion.Token.Repo.get_auth(user_id)
@@ -26,7 +26,10 @@ defmodule Subscription.Service do
     %{"refresh_token" => refresh_token, "expires_in" => expires_in} =
       Subscribtion.Token.Repo.get(user_id)
 
-    Process.sleep(expires_in * 1_000)
+    delay = expires_in * 1_000
+    Logger.warn("expires in #{delay}")
+    Process.sleep(delay)
+    Logger.warn("awaken #{delay}")
     Logger.debug("refresh token for user: #{user_id}")
 
     token_metadata =
@@ -35,6 +38,8 @@ defmodule Subscription.Service do
         _ -> Map.put(token_response, "refresh_token", refresh_token)
       end
 
+    Logger.warn("fetched:")
+    IO.inspect(token_metadata)
     Subscribtion.Token.Repo.save(user_id, token_metadata)
 
     refresh_token(user_id)
