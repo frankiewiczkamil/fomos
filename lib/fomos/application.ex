@@ -25,7 +25,7 @@ defmodule Fomos.Application do
       # Start a worker by calling: Fomos.Worker.start_link(arg)
       # {Fomos.Worker, arg}
       Show.TrackingCoordinator,
-      Subscription.ShowTrackingRequester
+      Podcast.Tracking.Initilizer.GenServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

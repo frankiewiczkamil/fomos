@@ -1,23 +1,7 @@
-defmodule Subscription.ShowTrackingRequester do
-  use GenServer
+defmodule Podcast.Tracking.Initilizer do
   require Logger
-  @delay 1 * 1_000
 
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, %{})
-  end
-
-  def init(state) do
-    Process.send_after(self(), :init, @delay)
-    {:ok, state}
-  end
-
-  def handle_info(:init, state) do
-    init_subscriptions_from_db()
-    {:noreply, state}
-  end
-
-  defp init_subscriptions_from_db() do
+  def init_subscriptions_from_db() do
     Logger.debug("Init subscriptions from DB: start")
     Subscription.Repo.first() |> init_subscriptions_from_db
   end
